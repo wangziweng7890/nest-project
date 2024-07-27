@@ -1,9 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateAuthDto } from './dto/auth.dto';
-
+import { PrismaService } from 'nestjs-prisma';
 @Injectable()
 export class AuthService {
-  register(createAuthDto: CreateAuthDto) {
+  constructor(private prisma: PrismaService) {}
+  async register(createAuthDto: CreateAuthDto) {
+    const hasUser = await this.prisma.user.findUnique({
+      where: { username: createAuthDto.username } 
+    })
+    if (hasUser) {
+      throw new HttpException('用户名已存在', HttpStatus.BAD_REQUEST)
+    }
+    await this.prisma.user.create({ data: createAuthDto })
     return '创建成功'
   }
   login(createAuthDto: CreateAuthDto) {
