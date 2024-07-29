@@ -7,11 +7,18 @@ import { ResponseFormatInterceptor } from './common/interceptor/response-format/
 import { StreamDemoModule } from './stream-demo/stream-demo.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule, loggingMiddleware } from 'nestjs-prisma';
+import { OssModule } from './base/oss/oss.module';
+import configuration from './config/configuration';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     AuthModule, 
     StreamDemoModule, 
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
+    ScheduleModule.forRoot(), // 定时任务
     PrismaModule.forRoot({
       isGlobal: true,
       prismaServiceOptions: {
@@ -23,7 +30,8 @@ import { PrismaModule, loggingMiddleware } from 'nestjs-prisma';
           }),
         ],
       },
-    })
+    }),
+    OssModule
   ],
   controllers: [AppController],
   providers: [
