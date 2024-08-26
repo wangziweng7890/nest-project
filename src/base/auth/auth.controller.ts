@@ -9,6 +9,7 @@ export class AuthController {
   // 注册
   @Post('register')
   register(@Body() createAuthDto: CreateAuthDto) {
+    throw new Error('Method Not Allowed');
     return this.authService.register(createAuthDto);
   }
   // 登录
